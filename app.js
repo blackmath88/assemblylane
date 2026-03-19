@@ -13,6 +13,9 @@
   // ─── DOM refs ─────────────────────────────────────────────
   let canvas, svgOverlay, detailPanel, detailInner;
 
+  // ─── Inspiration panel refs ───────────────────────────────
+  let inspoBackdrop, inspoPanel, inspoTextarea, inspoOutput, inspoOutputContent;
+
   // ─── Init ─────────────────────────────────────────────────
   function init() {
     canvas       = document.getElementById('canvas');
@@ -20,9 +23,16 @@
     detailPanel  = document.getElementById('detail-panel');
     detailInner  = document.getElementById('detail-inner');
 
+    inspoBackdrop     = document.getElementById('inspo-backdrop');
+    inspoPanel        = document.getElementById('inspo-panel');
+    inspoTextarea     = document.getElementById('inspo-textarea');
+    inspoOutput       = document.getElementById('inspo-output');
+    inspoOutputContent = document.getElementById('inspo-output-content');
+
     renderIntroLegend();
     renderStages();
     bindControls();
+    bindInspoPanel();
 
     // Redraw lines on scroll and resize
     canvas.addEventListener('scroll', drawConnectors);
@@ -129,6 +139,63 @@
 
     // Detail panel clicks don't propagate to canvas
     detailPanel.addEventListener('click', e => e.stopPropagation());
+
+    // Keyboard: Escape closes inspiration panel
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && inspoPanel && inspoPanel.classList.contains('open')) {
+        closeInspoPanel();
+      }
+    });
+  }
+
+  // ─── AI Inspiration panel ─────────────────────────────────
+  function bindInspoPanel() {
+    document.getElementById('inspo-btn').addEventListener('click', openInspoPanel);
+    document.getElementById('inspo-close').addEventListener('click', closeInspoPanel);
+    inspoBackdrop.addEventListener('click', closeInspoPanel);
+
+    document.getElementById('inspo-render-btn').addEventListener('click', renderInspoContent);
+    document.getElementById('inspo-clear-btn').addEventListener('click', clearInspoContent);
+    document.getElementById('inspo-edit-btn').addEventListener('click', editInspoContent);
+  }
+
+  function openInspoPanel() {
+    inspoBackdrop.classList.add('open');
+    inspoPanel.classList.add('open');
+    inspoTextarea.focus();
+  }
+
+  function closeInspoPanel() {
+    inspoBackdrop.classList.remove('open');
+    inspoPanel.classList.remove('open');
+  }
+
+  function renderInspoContent() {
+    const raw = inspoTextarea.value.trim();
+    if (!raw) {
+      inspoTextarea.classList.add('inspo-shake');
+      inspoTextarea.addEventListener('animationend', () => {
+        inspoTextarea.classList.remove('inspo-shake');
+      }, { once: true });
+      return;
+    }
+    inspoOutputContent.textContent = raw;
+    inspoOutput.hidden = false;
+    document.getElementById('inspo-input-area').hidden = true;
+  }
+
+  function editInspoContent() {
+    inspoOutput.hidden = true;
+    document.getElementById('inspo-input-area').hidden = false;
+    inspoTextarea.focus();
+  }
+
+  function clearInspoContent() {
+    inspoTextarea.value = '';
+    inspoOutput.hidden = true;
+    inspoOutputContent.textContent = '';
+    document.getElementById('inspo-input-area').hidden = false;
+    inspoTextarea.focus();
   }
 
   // ─── Mode switch ──────────────────────────────────────────

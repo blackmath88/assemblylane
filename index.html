@@ -25,12 +25,43 @@
 
     <div id="header-right">
       <span id="thread-hint"></span>
+      <button id="inspo-btn" title="Paste inspiration from Claude">✦ Inspiration</button>
       <div id="mode-toggle">
         <button class="mode-btn active" data-mode="assembled">Assembled</button>
         <button class="mode-btn" data-mode="exploded">Exploded</button>
       </div>
     </div>
   </header>
+
+  <!-- ─── AI Inspiration panel ──────────────────────────── -->
+  <div id="inspo-backdrop" aria-hidden="true"></div>
+  <div id="inspo-panel" role="dialog" aria-modal="true" aria-label="AI Inspiration">
+    <div id="inspo-header">
+      <div id="inspo-title">
+        <div id="inspo-logo">✦</div>
+        <span>AI Inspiration</span>
+        <span id="inspo-source-tag">from Claude</span>
+      </div>
+      <button id="inspo-close" title="Close panel">✕</button>
+    </div>
+
+    <div id="inspo-input-area">
+      <label id="inspo-label" for="inspo-textarea">Paste Claude's response below, then click Display.</label>
+      <textarea id="inspo-textarea" placeholder="Paste inspiration from Claude here…" rows="8" spellcheck="false"></textarea>
+      <div id="inspo-actions">
+        <button id="inspo-render-btn" class="inspo-action-btn primary">Display</button>
+        <button id="inspo-clear-btn" class="inspo-action-btn">Clear</button>
+      </div>
+    </div>
+
+    <div id="inspo-output" hidden>
+      <div id="inspo-output-header">
+        <span id="inspo-output-label">Claude's Inspiration</span>
+        <button id="inspo-edit-btn" class="inspo-action-btn">Edit</button>
+      </div>
+      <div id="inspo-output-content"></div>
+    </div>
+  </div>
 
   <!-- ─── Main ───────────────────────────────────────────── -->
   <div id="main">
