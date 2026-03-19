@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build Atlas — Architecture as Journey</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ─── Header ─────────────────────────────────────────── -->
+  <header id="header">
+    <div id="header-left">
+      <div id="logo">
+        <div id="logo-mark">BA</div>
+        <span id="logo-name">Build Atlas</span>
+      </div>
+      <div id="project-pill">
+        <div id="project-pill-dot"></div>
+        <span>Stakeholder Atlas &mdash; worked example</span>
+      </div>
+    </div>
+
+    <div id="header-right">
+      <span id="thread-hint"></span>
+      <div id="mode-toggle">
+        <button class="mode-btn active" data-mode="assembled">Assembled</button>
+        <button class="mode-btn" data-mode="exploded">Exploded</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── Main ───────────────────────────────────────────── -->
+  <div id="main">
+
+    <!-- Canvas (scrollable) -->
+    <div id="canvas">
+
+      <!-- SVG connector lines overlay -->
+      <svg id="connector-svg" aria-hidden="true"></svg>
+
+      <!-- Zone legend -->
+      <div id="canvas-intro"></div>
+
+      <!-- Stage rows injected by app.js -->
+      <div id="stage-container"></div>
+
+      <div id="canvas-footer"></div>
+    </div>
+
+    <!-- Detail panel -->
+    <div id="detail-panel" role="complementary" aria-label="Node detail">
+      <div id="detail-inner">
+        <!-- Content injected by app.js -->
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
