@@ -1,32 +1,29 @@
-/* ─── Build Atlas — Application ─────────────────────────── */
+/* ─── AssemblyLane — Application ───────────────────────── */
 
 (function () {
   'use strict';
 
-  // ─── State ────────────────────────────────────────────────
   const state = {
-    mode: 'assembled',   // 'assembled' | 'exploded'
-    selectedId: null,    // currently selected card id
-    threadIds: new Set() // all ids in the active thread
+    mode: 'assembled',
+    selectedId: null,
+    threadIds: new Set()
   };
 
-  // ─── DOM refs ─────────────────────────────────────────────
   let canvas, svgOverlay, detailPanel, detailInner;
-
-  // ─── Inspiration panel refs ───────────────────────────────
   let inspoBackdrop, inspoPanel, inspoTextarea, inspoOutput, inspoOutputContent;
+  let redrawTimer = null;
+  let connectorDelayTimer = null;
 
-  // ─── Init ─────────────────────────────────────────────────
   function init() {
-    canvas       = document.getElementById('canvas');
-    svgOverlay   = document.getElementById('connector-svg');
-    detailPanel  = document.getElementById('detail-panel');
-    detailInner  = document.getElementById('detail-inner');
+    canvas = document.getElementById('canvas');
+    svgOverlay = document.getElementById('connector-svg');
+    detailPanel = document.getElementById('detail-panel');
+    detailInner = document.getElementById('detail-inner');
 
-    inspoBackdrop     = document.getElementById('inspo-backdrop');
-    inspoPanel        = document.getElementById('inspo-panel');
-    inspoTextarea     = document.getElementById('inspo-textarea');
-    inspoOutput       = document.getElementById('inspo-output');
+    inspoBackdrop = document.getElementById('inspo-backdrop');
+    inspoPanel = document.getElementById('inspo-panel');
+    inspoTextarea = document.getElementById('inspo-textarea');
+    inspoOutput = document.getElementById('inspo-output');
     inspoOutputContent = document.getElementById('inspo-output-content');
 
     renderIntroLegend();
@@ -34,35 +31,32 @@
     bindControls();
     bindInspoPanel();
 
-    // Redraw lines on scroll and resize
     canvas.addEventListener('scroll', drawConnectors);
-    window.addEventListener('resize', () => { scheduleRedraw(); });
+    window.addEventListener('resize', scheduleRedraw);
 
-    // Initial draw after layout settles
     requestAnimationFrame(() => requestAnimationFrame(drawConnectors));
   }
 
-  // ─── Legend / intro ───────────────────────────────────────
   function renderIntroLegend() {
     const wrap = document.getElementById('canvas-intro');
     const zones = [
-      { key: 'concept',        label: 'Concept',        stages: 'Intent → Use Cases' },
-      { key: 'architecture',   label: 'Architecture',   stages: 'Capabilities → Modules → Layers' },
+      { key: 'concept', label: 'Concept', stages: 'Intent → Use Cases' },
+      { key: 'architecture', label: 'Architecture', stages: 'Capabilities → Modules → Layers' },
       { key: 'implementation', label: 'Implementation', stages: 'Patterns → Components → Code' }
     ];
-    wrap.innerHTML = zones.map(z => `
-      <span class="zone-badge ${z.key}" title="${z.stages}">${z.label}</span>
+
+    wrap.innerHTML = zones.map(zone => `
+      <span class="zone-badge ${zone.key}" title="${zone.stages}">${zone.label}</span>
     `).join('<span style="color:var(--text-3);font-size:11px">·</span>');
   }
 
-  // ─── Stage rows ───────────────────────────────────────────
   function renderStages() {
     const container = document.getElementById('stage-container');
     container.innerHTML = '';
 
-    let cardDelay = 0;
+    let cardIndex = 0;
     STAGE_ORDER.forEach(stageType => {
-      const meta  = STAGE_METADATA[stageType];
+      const meta = STAGE_METADATA[stageType];
       const nodes = stagesByType[stageType] || [];
       if (!nodes.length) return;
 
@@ -71,7 +65,6 @@
       row.dataset.type = stageType;
       row.dataset.zone = meta.zone;
 
-      // Stage label
       const label = document.createElement('div');
       label.className = 'stage-label';
       label.innerHTML = `
@@ -82,14 +75,12 @@
         <span class="stage-count">${nodes.length} item${nodes.length !== 1 ? 's' : ''}</span>
       `;
 
-      // Cards area
       const cardsWrap = document.createElement('div');
       cardsWrap.className = 'stage-cards';
 
       nodes.forEach(node => {
-        const card = buildCard(node, meta, cardDelay * 40);
-        cardsWrap.appendChild(card);
-        cardDelay++;
+        cardsWrap.appendChild(buildCard(node, meta, cardIndex));
+        cardIndex += 1;
       });
 
       row.appendChild(label);
@@ -98,22 +89,34 @@
     });
   }
 
-  function buildCard(node, meta, delayMs) {
+  function buildCard(node, meta, index) {
     const card = document.createElement('div');
     card.className = 'card';
     card.id = `card-${node.id}`;
     card.dataset.id = node.id;
+    card.dataset.index = String(index);
     card.style.setProperty('--stage-color', meta.color);
-    card.style.animationDelay = `${delayMs}ms`;
+
+    const contextLabel = node.risk_warning
+      ? 'Risk'
+      : node.teaching_note
+        ? 'Context'
+        : 'Explore';
+    const contextText = node.risk_warning || node.teaching_note || `Open ${node.title} to inspect its role in the incident thread.`;
 
     card.innerHTML = `
       <div class="card-type-chip" style="color:${meta.color}">${meta.label}</div>
       <div class="card-title">${node.title}</div>
       <div class="card-desc">${node.description}</div>
+      <div class="card-context">
+        <div class="card-context-line"><strong>${contextLabel}:</strong> ${truncate(contextText, 110)}</div>
+        <div class="card-context-line"><strong>Parents:</strong> ${(node.parent_ids || []).length ? (node.parent_ids || []).map(parentId => nodesById[parentId]?.title || parentId).join(' · ') : 'Entry point'}</div>
+      </div>
+      <div class="card-click-hint">Click for context</div>
     `;
 
-    card.addEventListener('click', (e) => {
-      e.stopPropagation();
+    card.addEventListener('click', (event) => {
+      event.stopPropagation();
       if (state.selectedId === node.id) {
         clearSelection();
       } else {
@@ -124,9 +127,7 @@
     return card;
   }
 
-  // ─── Controls ─────────────────────────────────────────────
   function bindControls() {
-    // Mode toggle
     document.querySelectorAll('.mode-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const mode = btn.dataset.mode;
@@ -134,21 +135,16 @@
       });
     });
 
-    // Click canvas background → clear
     canvas.addEventListener('click', clearSelection);
+    detailPanel.addEventListener('click', event => event.stopPropagation());
 
-    // Detail panel clicks don't propagate to canvas
-    detailPanel.addEventListener('click', e => e.stopPropagation());
-
-    // Keyboard: Escape closes inspiration panel
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && inspoPanel && inspoPanel.classList.contains('open')) {
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && inspoPanel.classList.contains('open')) {
         closeInspoPanel();
       }
     });
   }
 
-  // ─── AI Inspiration panel ─────────────────────────────────
   function bindInspoPanel() {
     document.getElementById('inspo-btn').addEventListener('click', openInspoPanel);
     document.getElementById('inspo-close').addEventListener('click', closeInspoPanel);
@@ -173,10 +169,6 @@
   function renderInspoContent() {
     const raw = inspoTextarea.value.trim();
     if (!raw) {
-      inspoTextarea.classList.add('inspo-shake');
-      inspoTextarea.addEventListener('animationend', () => {
-        inspoTextarea.classList.remove('inspo-shake');
-      }, { once: true });
       return;
     }
     inspoOutputContent.textContent = raw;
@@ -198,33 +190,75 @@
     inspoTextarea.focus();
   }
 
-  // ─── Mode switch ──────────────────────────────────────────
   function setMode(mode) {
     state.mode = mode;
-    document.body.classList.toggle('exploded', mode === 'exploded');
+    const isExploded = mode === 'exploded';
+
+    document.body.classList.toggle('exploded', isExploded);
+    document.body.classList.toggle('connectors-delayed', isExploded);
+    document.body.classList.remove('connectors-ready');
 
     document.querySelectorAll('.mode-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.mode === mode);
     });
 
+    animateModeCards(isExploded ? 'mode-enter' : 'mode-exit', isExploded ? 35 : 0);
+    scheduleConnectorReveal(isExploded ? 650 : 0);
     scheduleRedraw();
   }
 
-  // ─── Thread computation ───────────────────────────────────
+  function animateModeCards(className, staggerMs) {
+    document.querySelectorAll('.card').forEach(card => {
+      card.classList.remove('mode-enter', 'mode-exit');
+      card.style.animationDelay = `${Number(card.dataset.index || 0) * staggerMs}ms`;
+      card.classList.add(className);
+
+      const onEnd = () => {
+        card.classList.remove(className);
+        if (className === 'mode-exit') {
+          card.style.animationDelay = '0ms';
+        }
+      };
+      card.addEventListener('animationend', onEnd, { once: true });
+    });
+  }
+
+  function scheduleConnectorReveal(delayMs) {
+    clearTimeout(connectorDelayTimer);
+
+    if (delayMs <= 0) {
+      document.body.classList.remove('connectors-delayed');
+      document.body.classList.add('connectors-ready');
+      return;
+    }
+
+    connectorDelayTimer = setTimeout(() => {
+      document.body.classList.remove('connectors-delayed');
+      document.body.classList.add('connectors-ready');
+      drawConnectors();
+    }, delayMs);
+  }
+
   function computeThread(id) {
     const set = new Set([id]);
 
     function up(nodeId) {
       const node = nodesById[nodeId];
       if (!node) return;
-      (node.parent_ids || []).forEach(pid => {
-        if (!set.has(pid)) { set.add(pid); up(pid); }
+      (node.parent_ids || []).forEach(parentId => {
+        if (!set.has(parentId)) {
+          set.add(parentId);
+          up(parentId);
+        }
       });
     }
 
     function down(nodeId) {
-      (childrenById[nodeId] || []).forEach(cid => {
-        if (!set.has(cid)) { set.add(cid); down(cid); }
+      (childrenById[nodeId] || []).forEach(childId => {
+        if (!set.has(childId)) {
+          set.add(childId);
+          down(childId);
+        }
       });
     }
 
@@ -233,27 +267,24 @@
     return set;
   }
 
-  // ─── Selection ────────────────────────────────────────────
   function selectCard(id) {
     state.selectedId = id;
-    state.threadIds  = computeThread(id);
+    state.threadIds = computeThread(id);
 
-    // Apply card classes
     document.querySelectorAll('.card').forEach(card => {
-      const cid = card.dataset.id;
+      const cardId = card.dataset.id;
       card.classList.remove('thread-selected', 'thread-member', 'thread-dimmed');
-      if (cid === id) {
+      if (cardId === id) {
         card.classList.add('thread-selected', 'thread-member');
-      } else if (state.threadIds.has(cid)) {
+      } else if (state.threadIds.has(cardId)) {
         card.classList.add('thread-member');
       } else {
         card.classList.add('thread-dimmed');
       }
     });
 
-    // Update header hint
     const hint = document.getElementById('thread-hint');
-    hint.textContent = 'Thread active — click card to switch, click background to clear';
+    hint.textContent = 'Thread active — click another part for more context, or click the canvas to clear';
     hint.classList.add('active');
 
     openDetailPanel(nodesById[id]);
@@ -262,7 +293,7 @@
 
   function clearSelection() {
     state.selectedId = null;
-    state.threadIds  = new Set();
+    state.threadIds = new Set();
 
     document.querySelectorAll('.card').forEach(card => {
       card.classList.remove('thread-selected', 'thread-member', 'thread-dimmed');
@@ -273,7 +304,6 @@
     scheduleRedraw();
   }
 
-  // ─── Detail Panel ─────────────────────────────────────────
   function openDetailPanel(node) {
     if (!node) return;
     detailPanel.classList.add('open');
@@ -286,9 +316,7 @@
 
   function renderDetailContent(node) {
     const meta = STAGE_METADATA[node.type];
-
-    // Ancestors and descendants for thread trace display
-    const ancestors   = getAncestors(node.id);
+    const ancestors = getAncestors(node.id);
     const descendants = getDescendants(node.id);
 
     let html = `
@@ -300,24 +328,37 @@
       <div id="detail-description">${node.description}</div>
     `;
 
-    // Decision points
-    if (node.decision_points && node.decision_points.length) {
+    if (node.teaching_note) {
+      html += `
+        <div class="detail-section">
+          <div class="detail-section-label">Teaching Note</div>
+          <div class="teaching-note">${node.teaching_note}</div>
+        </div>
+      `;
+    }
+
+    if (node.risk_warning) {
+      html += `
+        <div class="detail-section">
+          <div class="detail-section-label">Risk Warning</div>
+          <div class="risk-warning">${node.risk_warning}</div>
+        </div>
+      `;
+    }
+
+    if (node.decision_points?.length) {
       html += `
         <hr class="detail-divider">
         <div class="detail-section">
           <div class="detail-section-label">Decision Points</div>
           <ul class="detail-list">
-            ${node.decision_points.map(d => `<li>${d}</li>`).join('')}
+            ${node.decision_points.map(point => `<li>${point}</li>`).join('')}
           </ul>
         </div>
       `;
     }
 
-    // Prototype & scale path
-    if (
-      (node.prototype_path && node.prototype_path.length) ||
-      (node.scale_path && node.scale_path.length)
-    ) {
+    if (node.prototype_path?.length || node.scale_path?.length) {
       html += `
         <hr class="detail-divider">
         <div class="detail-section">
@@ -327,113 +368,117 @@
             <button class="path-tab" data-tab="scale">Scale-up</button>
           </div>
           <div class="path-content active" id="path-proto">
-            ${(node.prototype_path || []).map((p, i) => `
+            ${(node.prototype_path || []).map((item, index) => `
               <div class="path-item">
-                <span class="path-item-num">${i + 1}</span>
-                <span>${p}</span>
-              </div>`).join('')}
+                <span class="path-item-num">${index + 1}</span>
+                <span>${item}</span>
+              </div>
+            `).join('')}
           </div>
           <div class="path-content" id="path-scale">
-            ${(node.scale_path || []).map((p, i) => `
+            ${(node.scale_path || []).map((item, index) => `
               <div class="path-item">
-                <span class="path-item-num">${i + 1}</span>
-                <span>${p}</span>
-              </div>`).join('')}
+                <span class="path-item-num">${index + 1}</span>
+                <span>${item}</span>
+              </div>
+            `).join('')}
           </div>
         </div>
       `;
     }
 
-    // Thread trace
     if (ancestors.length || descendants.length) {
-      html += `<hr class="detail-divider"><div class="detail-section">`;
-      html += `<div class="detail-section-label">Thread Trace</div><div class="thread-trace">`;
+      html += '<hr class="detail-divider"><div class="detail-section">';
+      html += '<div class="detail-section-label">Thread Trace</div><div class="thread-trace">';
 
       if (ancestors.length) {
-        html += `<div class="trace-dir">↑ From above</div>`;
+        html += '<div class="trace-dir">↑ From above</div>';
         ancestors.slice().reverse().forEach(id => {
-          const n = nodesById[id];
-          if (!n) return;
-          const m = STAGE_METADATA[n.type];
-          html += `<div class="trace-item" data-id="${id}">
-            <div class="trace-dot" style="background:${m.color}"></div>
-            <span><strong>${m.label}</strong> · ${n.title}</span>
-          </div>`;
+          const ancestorNode = nodesById[id];
+          if (!ancestorNode) return;
+          const ancestorMeta = STAGE_METADATA[ancestorNode.type];
+          html += `
+            <div class="trace-item" data-id="${id}">
+              <div class="trace-dot" style="background:${ancestorMeta.color}"></div>
+              <span><strong>${ancestorMeta.label}</strong> · ${ancestorNode.title}</span>
+            </div>
+          `;
         });
       }
 
       if (descendants.length) {
-        html += `<div class="trace-dir">↓ Leads to</div>`;
+        html += '<div class="trace-dir">↓ Leads to</div>';
         descendants.forEach(id => {
-          const n = nodesById[id];
-          if (!n) return;
-          const m = STAGE_METADATA[n.type];
-          html += `<div class="trace-item" data-id="${id}">
-            <div class="trace-dot" style="background:${m.color}"></div>
-            <span><strong>${m.label}</strong> · ${n.title}</span>
-          </div>`;
+          const descendantNode = nodesById[id];
+          if (!descendantNode) return;
+          const descendantMeta = STAGE_METADATA[descendantNode.type];
+          html += `
+            <div class="trace-item" data-id="${id}">
+              <div class="trace-dot" style="background:${descendantMeta.color}"></div>
+              <span><strong>${descendantMeta.label}</strong> · ${descendantNode.title}</span>
+            </div>
+          `;
         });
       }
 
-      html += `</div></div>`;
+      html += '</div></div>';
     }
 
-    // Artifacts
-    if (node.artifacts && node.artifacts.length) {
-      html += `<hr class="detail-divider"><div class="detail-section">`;
-      html += `<div class="detail-section-label">Artifacts</div>`;
-      node.artifacts.forEach(art => {
+    if (node.artifacts?.length) {
+      html += '<hr class="detail-divider"><div class="detail-section">';
+      html += '<div class="detail-section-label">Artifacts</div>';
+      node.artifacts.forEach(artifact => {
         html += `
           <div class="artifact-block">
             <div class="artifact-header">
-              <span class="artifact-type-pill">${art.type}</span>
-              <span class="artifact-filename">${art.title}</span>
+              <span class="artifact-type-pill">${artifact.type}</span>
+              <span class="artifact-filename">${artifact.title}</span>
             </div>
             <div class="artifact-body">
-              <pre>${escapeHtml(art.content)}</pre>
+              <pre>${escapeHtml(artifact.content)}</pre>
             </div>
           </div>
         `;
       });
-      html += `</div>`;
+      html += '</div>';
     }
 
     detailInner.innerHTML = html;
     detailInner.scrollTop = 0;
 
-    // Rebind close button (innerHTML replaced it)
     document.getElementById('detail-close').addEventListener('click', clearSelection);
 
-    // Bind path tabs
     detailInner.querySelectorAll('.path-tab').forEach(tab => {
       tab.addEventListener('click', () => {
-        detailInner.querySelectorAll('.path-tab').forEach(t => t.classList.remove('active'));
-        detailInner.querySelectorAll('.path-content').forEach(c => c.classList.remove('active'));
+        detailInner.querySelectorAll('.path-tab').forEach(item => item.classList.remove('active'));
+        detailInner.querySelectorAll('.path-content').forEach(item => item.classList.remove('active'));
         tab.classList.add('active');
         detailInner.querySelector(`#path-${tab.dataset.tab}`).classList.add('active');
       });
     });
 
-    // Bind trace items → click to navigate
     detailInner.querySelectorAll('.trace-item[data-id]').forEach(item => {
       item.addEventListener('click', () => {
-        const tid = item.dataset.id;
-        selectCard(tid);
-        // Scroll card into view
-        const cardEl = document.getElementById(`card-${tid}`);
-        if (cardEl) cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const targetId = item.dataset.id;
+        selectCard(targetId);
+        const cardEl = document.getElementById(`card-${targetId}`);
+        if (cardEl) {
+          cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
       });
     });
   }
 
-  // ─── Thread helpers ───────────────────────────────────────
   function getAncestors(id) {
     const result = [];
     function up(nodeId) {
       const node = nodesById[nodeId];
       if (!node) return;
-      (node.parent_ids || []).forEach(pid => {
-        if (!result.includes(pid)) { result.push(pid); up(pid); }
+      (node.parent_ids || []).forEach(parentId => {
+        if (!result.includes(parentId)) {
+          result.push(parentId);
+          up(parentId);
+        }
       });
     }
     up(id);
@@ -443,16 +488,16 @@
   function getDescendants(id) {
     const result = [];
     function down(nodeId) {
-      (childrenById[nodeId] || []).forEach(cid => {
-        if (!result.includes(cid)) { result.push(cid); down(cid); }
+      (childrenById[nodeId] || []).forEach(childId => {
+        if (!result.includes(childId)) {
+          result.push(childId);
+          down(childId);
+        }
       });
     }
     down(id);
     return result;
   }
-
-  // ─── Connector lines ──────────────────────────────────────
-  let redrawTimer = null;
 
   function scheduleRedraw() {
     clearTimeout(redrawTimer);
@@ -460,72 +505,67 @@
   }
 
   function drawConnectors() {
-    const canvasRect  = canvas.getBoundingClientRect();
-    const scrollTop   = canvas.scrollTop;
-    const scrollLeft  = canvas.scrollLeft;
-
-    // Size the SVG to the full scroll area
+    const canvasRect = canvas.getBoundingClientRect();
+    const scrollTop = canvas.scrollTop;
+    const scrollLeft = canvas.scrollLeft;
     const totalH = canvas.scrollHeight;
     const totalW = canvas.scrollWidth;
-    svgOverlay.setAttribute('width',  totalW);
+
+    svgOverlay.setAttribute('width', totalW);
     svgOverlay.setAttribute('height', totalH);
     svgOverlay.setAttribute('viewBox', `0 0 ${totalW} ${totalH}`);
 
-    // Remove existing paths
     while (svgOverlay.firstChild) svgOverlay.removeChild(svgOverlay.firstChild);
 
-    const isExploded  = state.mode === 'exploded';
-    const hasThread   = state.selectedId !== null;
+    const isExploded = state.mode === 'exploded';
+    const hasThread = state.selectedId !== null;
 
-    // For each parent→child relationship, draw a bezier
     project.stages.forEach(node => {
       (node.parent_ids || []).forEach(parentId => {
         const parentEl = document.getElementById(`card-${parentId}`);
-        const childEl  = document.getElementById(`card-${node.id}`);
+        const childEl = document.getElementById(`card-${node.id}`);
         if (!parentEl || !childEl) return;
 
-        const pRect = posRelToCanvas(parentEl, canvasRect, scrollTop, scrollLeft);
-        const cRect = posRelToCanvas(childEl,  canvasRect, scrollTop, scrollLeft);
+        const parentRect = posRelToCanvas(parentEl, canvasRect, scrollTop, scrollLeft);
+        const childRect = posRelToCanvas(childEl, canvasRect, scrollTop, scrollLeft);
 
-        const x1 = pRect.left + pRect.width  / 2;
-        const y1 = pRect.top  + pRect.height;
-        const x2 = cRect.left + cRect.width  / 2;
-        const y2 = cRect.top;
+        const x1 = parentRect.left + parentRect.width / 2;
+        const y1 = parentRect.top + parentRect.height;
+        const x2 = childRect.left + childRect.width / 2;
+        const y2 = childRect.top;
+        const curveY = (y1 + y2) / 2;
 
-        const cy = (y1 + y2) / 2;
-
-        const isThread = hasThread &&
-          state.threadIds.has(parentId) &&
-          state.threadIds.has(node.id);
+        const isThread = hasThread && state.threadIds.has(parentId) && state.threadIds.has(node.id);
 
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', `M ${x1} ${y1} C ${x1} ${cy} ${x2} ${cy} ${x2} ${y2}`);
+        path.setAttribute('d', `M ${x1} ${y1} C ${x1} ${curveY} ${x2} ${curveY} ${x2} ${y2}`);
 
-        let cls = 'connector';
-        if (isExploded) cls += ' conn-visible';
-        if (hasThread) {
-          cls += isThread ? ' conn-thread' : ' conn-dimmed';
-        }
-        path.setAttribute('class', cls);
-
+        let className = 'connector';
+        if (isExploded) className += ' conn-visible';
+        if (hasThread) className += isThread ? ' conn-thread' : ' conn-dimmed';
+        path.setAttribute('class', className);
         svgOverlay.appendChild(path);
       });
     });
   }
 
   function posRelToCanvas(el, canvasRect, scrollTop, scrollLeft) {
-    const r = el.getBoundingClientRect();
+    const rect = el.getBoundingClientRect();
     return {
-      top:    r.top    - canvasRect.top  + scrollTop,
-      left:   r.left   - canvasRect.left + scrollLeft,
-      bottom: r.bottom - canvasRect.top  + scrollTop,
-      right:  r.right  - canvasRect.left + scrollLeft,
-      width:  r.width,
-      height: r.height
+      top: rect.top - canvasRect.top + scrollTop,
+      left: rect.left - canvasRect.left + scrollLeft,
+      bottom: rect.bottom - canvasRect.top + scrollTop,
+      right: rect.right - canvasRect.left + scrollLeft,
+      width: rect.width,
+      height: rect.height
     };
   }
 
-  // ─── Util ─────────────────────────────────────────────────
+  function truncate(text, maxLength) {
+    const value = String(text || '');
+    return value.length > maxLength ? `${value.slice(0, maxLength - 1)}…` : value;
+  }
+
   function escapeHtml(str) {
     return String(str)
       .replace(/&/g, '&amp;')
@@ -534,6 +574,5 @@
       .replace(/"/g, '&quot;');
   }
 
-  // ─── Boot ─────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', init);
 })();

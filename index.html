@@ -3,23 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Build Atlas — Architecture as Journey</title>
+  <title>AssemblyLane — Architecture as Journey</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="app">
-
-  <!-- ─── Header ─────────────────────────────────────────── -->
   <header id="header">
     <div id="header-left">
       <div id="logo">
-        <div id="logo-mark">BA</div>
-        <span id="logo-name">Build Atlas</span>
+        <div id="logo-mark">AL</div>
+        <span id="logo-name">AssemblyLane</span>
       </div>
       <div id="project-pill">
         <div id="project-pill-dot"></div>
-        <span>Stakeholder Atlas &mdash; worked example</span>
+        <span>AI Incident Response &mdash; worked example</span>
       </div>
     </div>
 
@@ -33,7 +34,6 @@
     </div>
   </header>
 
-  <!-- ─── AI Inspiration panel ──────────────────────────── -->
   <div id="inspo-backdrop" aria-hidden="true"></div>
   <div id="inspo-panel" role="dialog" aria-modal="true" aria-label="AI Inspiration">
     <div id="inspo-header">
@@ -63,33 +63,19 @@
     </div>
   </div>
 
-  <!-- ─── Main ───────────────────────────────────────────── -->
   <div id="main">
-
-    <!-- Canvas (scrollable) -->
     <div id="canvas">
-
-      <!-- SVG connector lines overlay -->
       <svg id="connector-svg" aria-hidden="true"></svg>
-
-      <!-- Zone legend -->
       <div id="canvas-intro"></div>
-
-      <!-- Stage rows injected by app.js -->
       <div id="stage-container"></div>
-
       <div id="canvas-footer"></div>
     </div>
 
-    <!-- Detail panel -->
     <div id="detail-panel" role="complementary" aria-label="Node detail">
-      <div id="detail-inner">
-        <!-- Content injected by app.js -->
-      </div>
+      <div id="detail-inner"></div>
     </div>
-
-  </div><!-- /main -->
-</div><!-- /app -->
+  </div>
+</div>
 
 <script src="data.js"></script>
 <script src="app.js"></script>
