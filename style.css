@@ -2,6 +2,9 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Ensure hidden attribute always hides elements regardless of display CSS */
+[hidden] { display: none !important; }
+
 :root {
   --bg:          #f5f4f1;
   --surface:     #ffffff;
@@ -541,6 +544,195 @@ body.exploded .connector.conn-visible {
   border: none;
 }
 
+/* ─── AI Inspiration button ─────────────────────────────── */
+
+#inspo-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 13px;
+  border: 1px solid rgba(207, 106, 51, 0.35);
+  border-radius: 8px;
+  background: rgba(207, 106, 51, 0.07);
+  color: #c25a1e;
+  font-size: 12.5px; font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  letter-spacing: 0.1px;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+#inspo-btn:hover {
+  background: rgba(207, 106, 51, 0.14);
+  border-color: rgba(207, 106, 51, 0.55);
+  color: #a8410e;
+}
+
+/* ─── AI Inspiration backdrop ───────────────────────────── */
+
+#inspo-backdrop {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(22, 33, 62, 0.35);
+  z-index: 200;
+  backdrop-filter: blur(2px);
+}
+
+#inspo-backdrop.open { display: block; }
+
+/* ─── AI Inspiration panel ──────────────────────────────── */
+
+#inspo-panel {
+  display: none;
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -48%);
+  z-index: 201;
+  width: min(560px, calc(100vw - 48px));
+  max-height: calc(100vh - 80px);
+  background: var(--surface);
+  border: 1px solid rgba(207, 106, 51, 0.22);
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18), 0 4px 16px rgba(207,106,51,0.10);
+  overflow: hidden;
+  flex-direction: column;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#inspo-panel.open {
+  display: flex;
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+
+/* Panel header */
+#inspo-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(207,106,51,0.06) 0%, rgba(207,106,51,0.02) 100%);
+  flex-shrink: 0;
+}
+
+#inspo-title {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 700; color: var(--text-1);
+}
+
+#inspo-logo {
+  width: 26px; height: 26px;
+  background: linear-gradient(135deg, #cf6a33, #e8884e);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: #fff;
+}
+
+#inspo-source-tag {
+  font-size: 11px; font-weight: 600;
+  color: #cf6a33;
+  padding: 1px 7px;
+  background: rgba(207, 106, 51, 0.10);
+  border-radius: 10px;
+  letter-spacing: 0.2px;
+}
+
+#inspo-close {
+  border: none; background: none; cursor: pointer;
+  color: var(--text-3); font-size: 18px; line-height: 1;
+  padding: 2px 4px; border-radius: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+#inspo-close:hover { background: var(--bg); color: var(--text-1); }
+
+/* Input area */
+#inspo-input-area {
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 18px;
+  overflow-y: auto;
+}
+
+#inspo-label {
+  font-size: 12px; color: var(--text-2); font-weight: 500;
+}
+
+#inspo-textarea {
+  width: 100%;
+  min-height: 150px;
+  resize: vertical;
+  border: 1px solid var(--border-med);
+  border-radius: 8px;
+  padding: 11px 13px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--text-1);
+  background: var(--bg);
+  line-height: 1.6;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#inspo-textarea:focus {
+  border-color: rgba(207, 106, 51, 0.5);
+  box-shadow: 0 0 0 3px rgba(207, 106, 51, 0.10);
+}
+
+#inspo-textarea::placeholder { color: var(--text-3); }
+
+#inspo-actions { display: flex; gap: 8px; }
+
+.inspo-action-btn {
+  padding: 6px 16px;
+  border-radius: 7px;
+  font-size: 12.5px; font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  border: 1px solid var(--border-med);
+  background: transparent;
+  color: var(--text-2);
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.inspo-action-btn:hover { background: var(--bg); color: var(--text-1); }
+
+.inspo-action-btn.primary {
+  background: #cf6a33;
+  color: #fff; border-color: #cf6a33;
+}
+
+.inspo-action-btn.primary:hover {
+  background: #b85a29; border-color: #b85a29;
+}
+
+/* Output area */
+#inspo-output {
+  display: flex; flex-direction: column; gap: 0;
+  border-top: 1px solid var(--border);
+  overflow-y: auto;
+  max-height: 320px;
+  flex-shrink: 0;
+}
+
+#inspo-output-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 18px 8px;
+  position: sticky; top: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+#inspo-output-label {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.6px;
+  color: #cf6a33;
+}
+
+#inspo-output-content {
+  padding: 16px 18px;
+  font-size: 13px; color: var(--text-2);
+  line-height: 1.75;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 /* ─── Stage Rail intro label ────────────────────────────── */
 
 #canvas-intro {
@@ -586,6 +778,19 @@ body.exploded .connector.conn-visible {
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes inspoShake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-5px); }
+  40%       { transform: translateX(5px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+
+.inspo-shake {
+  animation: inspoShake 0.4s ease;
+  border-color: #cf6a33 !important;
 }
 
 .card { animation: fadeInUp 0.35s ease both; }
