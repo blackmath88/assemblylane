@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Collaboration Framework — Editorial Journey Explorer</title>
+  <meta name="description" content="A premium editorial journey interface for the AI Collaboration Framework, turning AI from chat into structured work." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: #fff8f6;
+      --surface: rgba(255, 248, 246, 0.92);
+      --surface-strong: #fff6f2;
+      --surface-variant: #f5ddd7;
+      --surface-container: #ffe9e3;
+      --surface-container-high: #fbe3dc;
+      --surface-container-highest: #f5ddd7;
+      --text-primary: #251915;
+      --text-secondary: #58413b;
+      --outline: rgba(140, 113, 105, 0.45);
+      --outline-variant: rgba(224, 191, 182, 0.82);
+      --primary: #aa360b;
+      --primary-container: #ef673b;
+      --secondary: #7c506e;
+      --secondary-container: rgba(255, 199, 234, 0.75);
+      --tertiary: #805600;
+      --tertiary-container: rgba(195, 133, 0, 0.25);
+      --mint: #7fc8a9;
+      --teal: #5da9a6;
+      --shadow-soft: 0 20px 50px rgba(109, 75, 64, 0.10);
+      --shadow-card: 0 18px 32px rgba(121, 71, 54, 0.10);
+      --shadow-active: 0 28px 70px rgba(153, 67, 34, 0.16);
+      --radius-xl: 34px;
+      --radius-lg: 26px;
+      --radius-md: 20px;
+      --radius-sm: 16px;
+      --content-width: min(1540px, calc(100vw - 80px));
+      --grid-line: rgba(170, 54, 11, 0.05);
+      --transition: 360ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Manrope', system-ui, sans-serif;
+      color: var(--text-primary);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.15)),
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+        radial-gradient(circle at top left, rgba(239, 103, 59, 0.15), transparent 28%),
+        radial-gradient(circle at 85% 12%, rgba(127, 200, 169, 0.16), transparent 22%),
+        var(--background);
+      background-size: auto, 28px 28px, 28px 28px, auto, auto, auto;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+
+    .page-shell {
+      width: var(--content-width);
+      margin: 0 auto;
+      padding: 24px 0 56px;
+      position: relative;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 18px;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 16px 18px;
+      border: 1px solid rgba(255,255,255,0.65);
+      background: rgba(255, 248, 246, 0.74);
+      backdrop-filter: blur(18px);
+      border-radius: 24px;
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 30px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(239, 103, 59, 0.18), rgba(127, 200, 169, 0.30));
+      border: 1px solid rgba(170, 54, 11, 0.16);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+
+    .brand-copy { min-width: 0; }
+    .brand-label,
+    .eyebrow,
+    .section-label,
+    .tiny-kicker,
+    .chip,
+    .metric-label,
+    .rail-item .tier-label {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+    }
+
+    .brand-title {
+      font-size: 1rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .nav-links a {
+      padding: 11px 16px;
+      border-radius: 999px;
+      color: var(--text-secondary);
+      transition: background var(--transition), color var(--transition), transform var(--transition);
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      background: rgba(239, 103, 59, 0.10);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .topbar-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .meta-pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(170, 54, 11, 0.10);
+      background: rgba(255,255,255,0.55);
+      color: var(--text-secondary);
+      font-size: 0.86rem;
+      font-weight: 600;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .side-rail {
+      position: sticky;
+      top: 126px;
+      padding: 20px;
+      border-radius: 28px;
+      background: rgba(255, 248, 246, 0.82);
+      border: 1px solid rgba(170, 54, 11, 0.09);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(12px);
+    }
+
+    .side-rail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .side-rail-title {
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .rail-list {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .rail-item {
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: 22px;
+      padding: 14px 14px 16px;
+      background: rgba(255,255,255,0.45);
+      text-align: left;
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition), background var(--transition);
+    }
+
+    .rail-item:hover,
+    .rail-item.active {
+      transform: translateY(-2px);
+      border-color: rgba(170, 54, 11, 0.16);
+      box-shadow: var(--shadow-card);
+      background: rgba(255,255,255,0.88);
+    }
+
+    .rail-item .tier-name {
+      display: block;
+      font-size: 1rem;
+      font-weight: 800;
+      margin: 8px 0 4px;
+    }
+
+    .rail-item .tier-desc {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .side-note {
+      border-radius: 22px;
+      padding: 18px;
+      background: linear-gradient(145deg, rgba(239,103,59,0.12), rgba(255,255,255,0.72));
+      border: 1px solid rgba(170, 54, 11, 0.12);
+    }
+
+    .side-note p {
+      margin: 10px 0 0;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      font-size: 0.92rem;
+    }
+
+    .content {
+      display: grid;
+      gap: 26px;
+    }
+
+    .hero,
+    .journey-shell,
+    .context-grid,
+    .foundation-banner,
+    .framework-note {
+      position: relative;
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(170, 54, 11, 0.09);
+      background: linear-gradient(180deg, rgba(255,255,255,0.66), rgba(255,248,246,0.86));
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+
+    .hero {
+      padding: 34px;
+      min-height: 420px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      gap: 28px;
+    }
+
+    .hero::before,
+    .journey-shell::before,
+    .foundation-banner::before,
+    .framework-note::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 15% 18%, rgba(239,103,59,0.16), transparent 28%),
+        radial-gradient(circle at 92% 22%, rgba(127,200,169,0.18), transparent 24%);
+      pointer-events: none;
+    }
+
+    .hero-content,
+    .hero-aside,
+    .journey-header,
+    .journey-viewport,
+    .journey-footer,
+    .foundation-inner,
+    .framework-note-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .breadcrumb {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .chip {
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(170, 54, 11, 0.08);
+      font-weight: 800;
+    }
+
+    .hero h1 {
+      margin: 14px 0 16px;
+      font-size: clamp(3.6rem, 7vw, 6.8rem);
+      line-height: 0.94;
+      letter-spacing: -0.06em;
+      font-weight: 800;
+      max-width: 13ch;
+    }
+
+    .hero .lede {
+      max-width: 60ch;
+      font-size: 1.12rem;
+      line-height: 1.72;
+      color: var(--text-secondary);
+      margin-bottom: 26px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .hero-btn {
+      padding: 14px 20px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition), background var(--transition), border-color var(--transition);
+      font-weight: 700;
+    }
+
+    .hero-btn.primary {
+      background: var(--primary);
+      color: #fff8f6;
+      box-shadow: 0 14px 26px rgba(170, 54, 11, 0.24);
+    }
+
+    .hero-btn.secondary {
+      background: rgba(255,255,255,0.72);
+      color: var(--text-primary);
+      border-color: rgba(170, 54, 11, 0.12);
+    }
+
+    .hero-btn:hover { transform: translateY(-2px); }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .hero-stat {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.68);
+      border: 1px solid rgba(170, 54, 11, 0.08);
+    }
+
+    .hero-stat strong {
+      display: block;
+      font-size: 1.5rem;
+      margin: 8px 0 6px;
+    }
+
+    .hero-stat span {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .hero-aside {
+      display: grid;
+      gap: 16px;
+      align-content: space-between;
+    }
+
+    .aside-card {
+      border-radius: 28px;
+      padding: 24px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid rgba(170, 54, 11, 0.08);
+    }
+
+    .aside-card strong {
+      display: block;
+      font-size: 1.18rem;
+      margin: 10px 0;
+    }
+
+    .aside-card p,
+    .aside-card li,
+    .foundation-copy p,
+    .framework-note p,
+    .journey-header p,
+    .context-card p,
+    .module-col li,
+    .module-summary p,
+    .module-meta-copy p {
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .aside-card ul,
+    .module-col ul {
+      padding-left: 18px;
+      margin: 12px 0 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .signal-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(170, 54, 11, 0.08);
+      font-size: 0.95rem;
+    }
+
+    .signal-line:last-child { border-bottom: 0; padding-bottom: 0; }
+
+    .journey-shell {
+      padding: 28px;
+    }
+
+    .journey-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: end;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .journey-header h2,
+    .foundation-copy h2,
+    .framework-note h2 {
+      margin: 8px 0 10px;
+      font-size: clamp(2rem, 4vw, 3.6rem);
+      line-height: 0.96;
+      letter-spacing: -0.05em;
+    }
+
+    .journey-header .intro {
+      max-width: 58ch;
+    }
+
+    .journey-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .journey-meta .meta-pill { background: rgba(255,255,255,0.7); }
+
+    .persistence-ribbon {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-radius: 22px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      background: linear-gradient(120deg, rgba(239, 103, 59, 0.14), rgba(255, 233, 227, 0.96));
+      border: 1px solid rgba(170, 54, 11, 0.12);
+    }
+
+    .persistence-ribbon strong {
+      display: block;
+      font-size: 1.02rem;
+      margin-bottom: 4px;
+    }
+
+    .ribbon-badge {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(37, 25, 21, 0.06);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .journey-viewport {
+      overflow-x: auto;
+      padding-bottom: 8px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(170,54,11,0.18) transparent;
+    }
+
+    .journey-track {
+      min-height: 560px;
+      display: flex;
+      gap: 16px;
+      align-items: stretch;
+      min-width: 1180px;
+    }
+
+    .module-card {
+      position: relative;
+      border: 1px solid rgba(170, 54, 11, 0.08);
+      background: rgba(255,255,255,0.68);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      transition:
+        flex 420ms cubic-bezier(0.2, 0.7, 0.2, 1),
+        transform var(--transition),
+        box-shadow var(--transition),
+        border-color var(--transition),
+        background var(--transition);
+      cursor: pointer;
+      display: flex;
+      min-width: 112px;
+      flex: 0.76 0 0;
+    }
+
+    .module-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 50px rgba(121, 71, 54, 0.14);
+    }
+
+    .module-card.active {
+      flex: 4.8 0 0;
+      border-color: rgba(170, 54, 11, 0.16);
+      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,244,240,0.92));
+      box-shadow: var(--shadow-active);
+    }
+
+    .module-card.foundation-rule {
+      border-style: dashed;
+      background: linear-gradient(180deg, rgba(255, 238, 230, 0.98), rgba(255, 247, 244, 0.92));
+    }
+
+    .module-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.14) 100%);
+      pointer-events: none;
+    }
+
+    .module-card[data-tier='foundation'] { --module-accent: var(--primary); --module-soft: rgba(239, 103, 59, 0.16); }
+    .module-card[data-tier='enhancement'] { --module-accent: var(--secondary); --module-soft: rgba(124, 80, 110, 0.14); }
+    .module-card[data-tier='advanced'] { --module-accent: var(--tertiary); --module-soft: rgba(195, 133, 0, 0.15); }
+
+    .module-compressed,
+    .module-expanded {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+    }
+
+    .module-compressed {
+      padding: 18px 12px 22px;
+      display: grid;
+      align-content: space-between;
+      justify-items: center;
+      gap: 16px;
+    }
+
+    .module-card.active .module-compressed { display: none; }
+
+    .module-kicker {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.74rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      min-height: 160px;
+    }
+
+    .module-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: var(--module-soft);
+      color: var(--module-accent);
+      font-size: 1.2rem;
+      font-weight: 800;
+      border: 1px solid rgba(170, 54, 11, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
+    }
+
+    .module-short {
+      display: grid;
+      gap: 10px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .module-short .module-id {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+
+    .module-short strong {
+      font-size: 0.96rem;
+      max-width: 8ch;
+      line-height: 1.2;
+    }
+
+    .module-short span {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      max-width: 10ch;
+    }
+
+    .module-expanded {
+      display: none;
+      padding: 24px;
+      height: 100%;
+    }
+
+    .module-card.active .module-expanded {
+      display: grid;
+      gap: 22px;
+      grid-template-rows: auto auto 1fr auto;
+    }
+
+    .module-topline {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      flex-wrap: wrap;
+    }
+
+    .module-title-wrap {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .module-title-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .module-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--module-accent);
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: var(--module-soft);
+      font-weight: 700;
+    }
+
+    .module-title {
+      font-size: clamp(1.9rem, 4vw, 3rem);
+      line-height: 0.98;
+      letter-spacing: -0.05em;
+      margin: 0;
+    }
+
+    .module-tier-line {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .module-progress {
+      min-width: 200px;
+      display: grid;
+      gap: 10px;
+      justify-items: end;
+    }
+
+    .module-progress .metric-label { text-align: right; }
+
+    .progress-track {
+      width: 220px;
+      max-width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(37, 25, 21, 0.08);
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--module-accent), rgba(255,255,255,0.82));
+    }
+
+    .module-summary {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(250px, 0.85fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .summary-card,
+    .meta-mini-card,
+    .context-card {
+      border-radius: 24px;
+      border: 1px solid rgba(170, 54, 11, 0.08);
+      background: rgba(255,255,255,0.78);
+      padding: 18px;
+    }
+
+    .summary-card strong,
+    .meta-mini-card strong,
+    .context-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .summary-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .view-switcher {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.75);
+      border: 1px solid rgba(170, 54, 11, 0.08);
+      width: fit-content;
+    }
+
+    .view-btn {
+      border: 0;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-weight: 700;
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition), transform var(--transition);
+    }
+
+    .view-btn:hover { transform: translateY(-1px); }
+
+    .view-btn.active {
+      background: var(--module-soft);
+      color: var(--module-accent);
+    }
+
+    .module-columns {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      min-height: 220px;
+    }
+
+    .module-col {
+      border-radius: 24px;
+      padding: 18px;
+      background: rgba(255,255,255,0.76);
+      border: 1px solid rgba(170, 54, 11, 0.08);
+      display: grid;
+      align-content: start;
+      gap: 10px;
+    }
+
+    .module-col h3 {
+      margin: 0;
+      font-size: 1rem;
+      letter-spacing: -0.03em;
+    }
+
+    .module-col ul { margin-top: 2px; }
+
+    .module-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+      padding-top: 6px;
+      border-top: 1px solid rgba(170, 54, 11, 0.08);
+    }
+
+    .module-footer-note {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      max-width: 58ch;
+    }
+
+    .tier-pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: var(--module-soft);
+      color: var(--module-accent);
+    }
+
+    .journey-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .zoom-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.76);
+      border: 1px solid rgba(170, 54, 11, 0.08);
+    }
+
+    .zoom-indicator button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-weight: 700;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .zoom-indicator button.active {
+      background: rgba(37, 25, 21, 0.08);
+      color: var(--text-primary);
+    }
+
+    .context-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      padding: 22px;
+    }
+
+    .context-card {
+      min-height: 170px;
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+
+    .context-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-card);
+    }
+
+    .foundation-banner {
+      padding: 32px;
+    }
+
+    .foundation-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .foundation-copy {
+      display: grid;
+      gap: 14px;
+    }
+
+    .foundation-rule-card {
+      border-radius: 26px;
+      padding: 22px;
+      background: rgba(255,255,255,0.78);
+      border: 1px solid rgba(170, 54, 11, 0.12);
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .rule-steps {
+      display: grid;
+      gap: 12px;
+    }
+
+    .rule-step {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .rule-step .step-index {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(239, 103, 59, 0.12);
+      display: grid;
+      place-items: center;
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.88rem;
+    }
+
+    .framework-note {
+      padding: 30px;
+    }
+
+    .framework-note-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .framework-pillars {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .pillar {
+      border-radius: 22px;
+      border: 1px solid rgba(170, 54, 11, 0.08);
+      background: rgba(255,255,255,0.76);
+      padding: 18px;
+    }
+
+    .pillar strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .floating-status {
+      position: fixed;
+      right: 28px;
+      bottom: 24px;
+      z-index: 60;
+      padding: 14px 18px;
+      border-radius: 20px;
+      background: rgba(255, 248, 246, 0.84);
+      border: 1px solid rgba(170, 54, 11, 0.10);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(14px);
+      min-width: 240px;
+    }
+
+    .floating-status strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 1rem;
+    }
+
+    .floating-status span { color: var(--text-secondary); font-size: 0.88rem; }
+
+    @media (max-width: 1260px) {
+      .layout { grid-template-columns: 1fr; }
+      .side-rail {
+        position: static;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 18px;
+      }
+      .rail-list { margin-bottom: 0; }
+    }
+
+    @media (max-width: 1080px) {
+      .page-shell { width: min(calc(100vw - 28px), 100%); }
+      .topbar { top: 10px; border-radius: 20px; }
+      .hero,
+      .foundation-inner,
+      .framework-note-inner,
+      .module-summary,
+      .context-grid { grid-template-columns: 1fr; }
+      .hero-stats,
+      .framework-pillars,
+      .module-columns { grid-template-columns: 1fr; }
+      .journey-track { min-width: 980px; min-height: 620px; }
+    }
+
+    @media (max-width: 780px) {
+      body { background-size: auto, 20px 20px, 20px 20px, auto, auto, auto; }
+      .topbar { padding: 14px; }
+      .nav-links { display: none; }
+      .topbar-meta { justify-content: flex-start; }
+      .hero { padding: 24px; min-height: auto; }
+      .journey-shell,
+      .foundation-banner,
+      .framework-note { padding: 22px; }
+      .side-rail { grid-template-columns: 1fr; }
+      .journey-viewport { overflow-x: visible; }
+      .journey-track {
+        min-width: 0;
+        min-height: 0;
+        display: grid;
+        gap: 14px;
+      }
+      .module-card,
+      .module-card.active {
+        flex: none;
+        min-width: 0;
+        display: block;
+      }
+      .module-compressed {
+        padding: 18px;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        justify-items: start;
+      }
+      .module-kicker {
+        writing-mode: initial;
+        transform: none;
+        min-height: 0;
+      }
+      .module-short {
+        justify-items: start;
+        text-align: left;
+      }
+      .module-short strong,
+      .module-short span { max-width: none; }
+      .module-card:not(.active) .module-expanded { display: none !important; }
+      .context-grid { padding: 18px; }
+      .floating-status {
+        position: static;
+        margin-top: 18px;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">AC</div>
+        <div class="brand-copy">
+          <div class="brand-label">Framework Atlas</div>
+          <div class="brand-title">AI Collaboration Framework</div>
+        </div>
+      </div>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#journey" class="active">Framework</a>
+        <a href="#journey">Modules</a>
+        <a href="#foundation-rule">Foundation Rule</a>
+        <a href="#framework-note">About</a>
+        <a href="#framework-note">Archive</a>
+      </nav>
+      <div class="topbar-meta">
+        <div class="meta-pill">Strategic journey map</div>
+        <div class="meta-pill" id="activeTierPill">Tier 01 · Foundation</div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="side-rail">
+        <div>
+          <div class="side-rail-header">
+            <div>
+              <div class="section-label">Phase Navigation</div>
+              <div class="side-rail-title">Tier progression</div>
+            </div>
+          </div>
+          <div class="rail-list" id="tierNav"></div>
+        </div>
+        <div class="side-note">
+          <div class="tiny-kicker">Core Insight</div>
+          <p>Chat is temporary working memory, not a system of record. The framework exists to move valuable work into durable artifacts without losing momentum.</p>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section class="hero" id="hero">
+          <div class="hero-content">
+            <div class="breadcrumb">
+              <span class="chip">Framework</span>
+              <span class="chip">Journey Explorer</span>
+              <span class="chip">Structured Collaboration</span>
+            </div>
+            <div class="eyebrow">Strategic Framework · Human–AI Collaboration</div>
+            <h1>Turning AI from chat into structured work.</h1>
+            <p class="lede">A guided framework for onboarding, orchestrating, and scaling human–AI collaboration across individuals, teams, and organizations. This interface is designed as a strategic journey map: one active area in full editorial focus, the rest still visible as orientation.</p>
+            <div class="hero-actions">
+              <a class="hero-btn primary" href="#journey">Explore the Framework</a>
+              <a class="hero-btn secondary" href="#foundation-rule">View Foundation Rule</a>
+            </div>
+            <div class="hero-stats">
+              <div class="hero-stat">
+                <div class="metric-label">Structure</div>
+                <strong>3 tiers</strong>
+                <span>Foundation, enhancement, and advanced capability staged as one coherent progression.</span>
+              </div>
+              <div class="hero-stat">
+                <div class="metric-label">Coverage</div>
+                <strong>9 modules</strong>
+                <span>Each module stands alone, but together they form a practical operating system for collaboration.</span>
+              </div>
+              <div class="hero-stat">
+                <div class="metric-label">Foundation</div>
+                <strong>1 rule</strong>
+                <span>Store key outputs outside chat so knowledge persists across sessions, tools, and teams.</span>
+              </div>
+            </div>
+          </div>
+          <div class="hero-aside">
+            <div class="aside-card">
+              <div class="tiny-kicker">Experience Goal</div>
+              <strong>Strategic journey, not a dashboard.</strong>
+              <p>The interface should feel like a calm, premium, editorial atlas for moving from messy AI usage to durable, teachable, scalable ways of working.</p>
+            </div>
+            <div class="aside-card">
+              <div class="tiny-kicker">Narrative Arc</div>
+              <ul>
+                <li>Start with strategic framing.</li>
+                <li>Reveal the modular journey.</li>
+                <li>Demonstrate one module in depth.</li>
+                <li>Reinforce persistence as non-negotiable.</li>
+              </ul>
+            </div>
+            <div class="aside-card">
+              <div class="tiny-kicker">Orientation Signals</div>
+              <div class="signal-line"><span>Expanded focus</span><strong id="heroActiveModule">Module 03 · Knowledge Handoff</strong></div>
+              <div class="signal-line"><span>Current view</span><strong id="heroActiveMode">Exploded</strong></div>
+              <div class="signal-line"><span>Framework promise</span><strong>Durable, transferable, scalable</strong></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="journey-shell" id="journey">
+          <div class="journey-header">
+            <div>
+              <div class="section-label">Framework Journey</div>
+              <h2>Nine modules across three tiers.</h2>
+              <p class="intro">Start anywhere, but understand the system by moving through the journey. The visitor always sees the whole framework, while one active module receives expanded editorial treatment at a time.</p>
+            </div>
+            <div class="journey-meta">
+              <div class="meta-pill" id="journeyTierMeta">Tier 01 · Foundation</div>
+              <div class="meta-pill">Expanded / compressed journey nodes</div>
+            </div>
+          </div>
+
+          <div class="persistence-ribbon">
+            <div>
+              <div class="tiny-kicker">Foundation Rule</div>
+              <strong>Store important outputs outside the chat.</strong>
+              <div style="color: var(--text-secondary);">Docs, files, repos, and artifacts must become the durable memory of the work.</div>
+            </div>
+            <div class="ribbon-badge">Persistence by default</div>
+          </div>
+
+          <div class="journey-viewport">
+            <div class="journey-track" id="journeyTrack"></div>
+          </div>
+
+          <div class="journey-footer">
+            <div class="module-footer-note" id="journeyFooterNote">Module 03 anchors the philosophy most clearly: handoff, persistence, and transfer are what turn chat into a durable system of work.</div>
+            <div class="zoom-indicator" aria-label="Framework Resolution" id="resolutionControl"></div>
+          </div>
+        </section>
+
+        <section class="context-grid" id="context"></section>
+
+        <section class="foundation-banner" id="foundation-rule">
+          <div class="foundation-inner">
+            <div class="foundation-copy">
+              <div class="section-label">Foundation Rule</div>
+              <h2>Persistence is the hidden architecture beneath the framework.</h2>
+              <p>Store important outputs outside the chat. Docs, files, repos, and artifacts must become the durable memory of the work. This is the non-negotiable base rule beneath the entire framework.</p>
+              <div class="summary-grid">
+                <div class="summary-card">
+                  <div class="tiny-kicker">Core problem</div>
+                  <strong>AI use is powerful but unstable.</strong>
+                  <p>Context is lost, outputs remain trapped in chats, and work does not persist across sessions or platforms. The framework's foundation exists to reverse that instability.</p>
+                </div>
+                <div class="summary-card">
+                  <div class="tiny-kicker">Framework promise</div>
+                  <strong>Durable, transferable, teachable work.</strong>
+                  <p>Each module supports a broader operating system for human–AI collaboration, but persistence is the rule that makes the rest of the system hold together.</p>
+                </div>
+              </div>
+            </div>
+            <div class="foundation-rule-card">
+              <div class="tiny-kicker">Operating behavior</div>
+              <div class="rule-steps">
+                <div class="rule-step">
+                  <div class="step-index">1</div>
+                  <div><strong>Externalize results</strong><p>Move important decisions, templates, and outputs into markdown, JSON, repos, or shared folders.</p></div>
+                </div>
+                <div class="rule-step">
+                  <div class="step-index">2</div>
+                  <div><strong>Treat chat as working memory</strong><p>Use conversations for active thinking, not as the only place project state lives.</p></div>
+                </div>
+                <div class="rule-step">
+                  <div class="step-index">3</div>
+                  <div><strong>Build continuity artifacts</strong><p>Create handoff payloads, status snapshots, and reusable asset packs so work survives across sessions and platforms.</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="framework-note" id="framework-note">
+          <div class="framework-note-inner">
+            <div>
+              <div class="section-label">Framework Logic</div>
+              <h2>Modular, evidence-based, platform-agnostic.</h2>
+              <p>This framework is modular, evidence-based, and platform-agnostic. Each module can stand alone, but the real power comes from combining them into a structured way of working.</p>
+              <p>It emerged from daily practical use across major AI platforms. What began as simple prompting evolved into a broader methodology for orchestration, persistence, and scalable collaboration.</p>
+            </div>
+            <div class="framework-pillars">
+              <div class="pillar">
+                <div class="tiny-kicker">From</div>
+                <strong>Ephemeral chat behavior</strong>
+                <p>Messy sessions, repeated work, fragile context, and platform lock-in.</p>
+              </div>
+              <div class="pillar">
+                <div class="tiny-kicker">Through</div>
+                <strong>Tier → module → methods → assets</strong>
+                <p>A guided descent from concept to practical execution without losing orientation.</p>
+              </div>
+              <div class="pillar">
+                <div class="tiny-kicker">Toward</div>
+                <strong>Durable collaboration systems</strong>
+                <p>Transferable artifacts, clearer operating behavior, and scalable team adoption.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="floating-status">
+    <div class="tiny-kicker">Framework Resolution</div>
+    <strong id="floatingModeLabel">Exploded</strong>
+    <span id="floatingModeSummary">Expanded editorial detail with methods, assets, and why-it-matters structure.</span>
+  </div>
+
+  <script>
+    const frameworkData = {
+      tiers: {
+        foundation: {
+          id: 'foundation',
+          label: 'Tier 01',
+          name: 'Foundation',
+          descriptor: 'Core control and durable working methods'
+        },
+        enhancement: {
+          id: 'enhancement',
+          label: 'Tier 02',
+          name: 'Enhancement',
+          descriptor: 'Quality, clarity, and working flow'
+        },
+        advanced: {
+          id: 'advanced',
+          label: 'Tier 03',
+          name: 'Advanced',
+          descriptor: 'Scale, orchestration, and organizational adoption'
+        }
+      },
+      modes: {
+        Overview: {
+          summary: 'Strategic summary with activities, outputs, and success criteria.',
+          columns: [
+            { title: 'Activities', key: 'activities' },
+            { title: 'Outputs', key: 'outputs' },
+            { title: 'Success Criteria', key: 'success_criteria' }
+          ]
+        },
+        Exploded: {
+          summary: 'Expanded editorial detail with methods, assets, and why-it-matters structure.',
+          columns: [
+            { title: 'Why It Matters', key: 'why_it_matters', single: true },
+            { title: 'Methods', key: 'methods' },
+            { title: 'Assets', key: 'assets' }
+          ]
+        },
+        Execution: {
+          summary: 'Practical execution examples, operating moves, and persistence notes.',
+          columns: [
+            { title: 'Execution Examples', key: 'execution_examples' },
+            { title: 'Practical Moves', key: 'practical_moves' },
+            { title: 'Transfer / Persistence Notes', key: 'persistence_notes' }
+          ]
+        }
+      },
+      contextualPanels: [
+        {
+          key: 'objective',
+          title: 'Core Objective',
+          body: 'Move from chaotic AI usage toward durable, transferable, and teachable ways of working.'
+        },
+        {
+          key: 'risk',
+          title: 'Key Risk',
+          body: 'Without persistence and orchestration, AI outputs remain isolated, repetitive, and fragile.'
+        },
+        {
+          key: 'promise',
+          title: 'Framework Promise',
+          body: 'Each module stands alone, but together they form a practical operating system for human–AI collaboration.'
+        }
+      ],
+      modules: [
+        {
+          id: '01', slug: 'conversation-orchestration', tier: 'foundation', name: 'Conversation Orchestration', short_label: 'Orchestration', icon: '◎', progress: 90,
+          overview: 'Structure AI work through Navigator/Satellite patterns, mission scoping, and controlled task splitting.',
+          why_it_matters: 'Without orchestration, AI work becomes noisy, repetitive, and directionless.',
+          activities: ['Define navigator vs satellite roles', 'Separate strategic chat from execution chat', 'Use mission briefs for focused tasks'],
+          outputs: ['Navigator/Satellite working pattern', 'Reusable mission brief template', 'Cleaner task boundaries'],
+          success_criteria: ['Reduced context overload in long chats', 'More reliable focused outputs', 'Clearer separation between thinking and execution'],
+          methods: ['Navigator/Satellite pattern', 'Scope boxing', 'Task decomposition', 'Focused handoff prompts'],
+          assets: ['Mission brief template', 'Satellite prompt template', 'Status snapshot format'],
+          execution_examples: ['Use one navigator chat for strategy and one satellite chat for specific output production', 'Summarize satellite results before re-integrating into the main track'],
+          practical_moves: ['Begin every larger effort with a mission brief and role split', 'Review whether a task belongs in the strategy thread or an execution thread', 'Re-integrate only distilled results, not the entire satellite history'],
+          persistence_notes: ['Store mission briefs in reusable docs', 'Keep snapshots of satellite outputs for future reuse', 'Capture orchestration patterns outside the current chat']
+        },
+        {
+          id: '02', slug: 'prompt-engineering', tier: 'foundation', name: 'Prompt Engineering', short_label: 'Prompting', icon: '◌', progress: 30,
+          overview: 'Shape AI behavior through better framing, constraints, examples, and output definitions.',
+          why_it_matters: 'Good prompting reduces drift and increases usefulness, but only when embedded in a wider system.',
+          activities: ['Write clearer task framing', 'Define output format explicitly', 'Use examples and constraints intentionally'],
+          outputs: ['Prompt templates', 'Reusable system instructions', 'More predictable outputs'],
+          success_criteria: ['Less ambiguous responses', 'Better format adherence', 'Faster iteration cycles'],
+          methods: ['Role framing', 'Few-shot prompting', 'Output schema definition', 'Constraint setting'],
+          assets: ['System prompt library', 'Output-control templates', 'Reusable framing snippets'],
+          execution_examples: ['Ask for structured JSON when information must persist', 'Provide one strong example instead of five weak ones'],
+          practical_moves: ['Define what success looks like before asking for output', 'Use constraints to reduce drift instead of cleaning up later', 'Treat prompt templates as reusable assets, not disposable chat text'],
+          persistence_notes: ['Version useful prompts in a library', 'Keep proven output schemas in docs or code', 'Archive reusable prompting patterns by task type']
+        },
+        {
+          id: '03', slug: 'knowledge-handoff', tier: 'foundation', name: 'Knowledge Handoff', short_label: 'Handoff', icon: '▣', progress: 40,
+          overview: 'Convert ephemeral chat context into durable, transferable project records.',
+          why_it_matters: 'If outputs remain only in chat history, they are effectively lost.',
+          activities: ['Package project state into JSON', 'Create offboard summaries at key checkpoints', 'Bridge work between platforms'],
+          outputs: ['Portable handoff JSON', 'Cross-platform continuity payloads', 'Persistent project memory outside chat'],
+          success_criteria: ['A project can move between Claude, ChatGPT, Copilot, and Gemini without losing its core state', 'Important decisions survive closed chats', 'External artifacts become the real system of record'],
+          methods: ['JSON knowledge transfer', 'EIP command protocol', 'Offboard prompts', 'Cross-platform bridge packs'],
+          assets: ['Handoff payload schema', 'EIP command reference', 'Offboard template'],
+          execution_examples: ['!satellite for focused tasks', '!status for structured snapshot', '!givetootherllm for platform transfer', '!offboard for durable summary + artifact creation'],
+          practical_moves: ['Create a structured status payload before leaving a session', 'Persist checkpoints at natural project boundaries', 'Convert chat conclusions into reusable artifacts immediately'],
+          persistence_notes: ['Make external artifacts the source of truth', 'Bridge tools with structured handoff packs instead of memory', 'Preserve decisions, open questions, and next actions in durable files']
+        },
+        {
+          id: 'R', slug: 'results-persistence-rule', tier: 'foundation', name: 'Foundation Rule: Results Persistence', short_label: 'Persistence Rule', icon: '◆', progress: null,
+          overview: 'Store key results outside chats because chat is temporary working memory, not durable project memory.',
+          why_it_matters: 'This is the non-negotiable base rule beneath the entire framework.',
+          activities: ['Save outputs externally', 'Move decisions into docs/files/repos', 'Treat chat as working memory only'],
+          outputs: ['Durable artifacts', 'Continuity across sessions', 'Less project loss'],
+          success_criteria: ['No critical project knowledge exists only inside a conversation'],
+          methods: ['Externalization', 'Artifact-first working', 'Persistence by default'],
+          assets: ['JSON files', 'Markdown docs', 'Repos', 'Shared folders'],
+          execution_examples: ['Every important result should leave the chat and live somewhere durable'],
+          practical_moves: ['Ask where the result will live before generating it', 'Create artifacts as part of the workflow, not afterthoughts', 'Review projects for knowledge still trapped in conversation history'],
+          persistence_notes: ['If it matters later, it belongs outside the chat', 'Use docs and repos as memory layers', 'Make continuity an explicit operating habit']
+        },
+        {
+          id: '04', slug: 'visual-communication', tier: 'enhancement', name: 'Visual Communication', short_label: 'Visuals', icon: '◍', progress: 50,
+          overview: 'Translate complex AI thinking into clear visual structures that help people orient, decide, and adopt.',
+          why_it_matters: 'People understand systems faster when they can see structure.',
+          activities: ['Create visual maps', 'Show layers and relationships', 'Make invisible thinking visible'],
+          outputs: ['Framework maps', 'Interactive HTML views', 'Exploded diagrams'],
+          success_criteria: ['Faster stakeholder understanding', 'Better communication across technical and non-technical audiences'],
+          methods: ['Exploded views', 'Progressive disclosure', 'Layered system diagrams'],
+          assets: ['HTML prototypes', 'SVG diagrams', 'Interactive maps'],
+          execution_examples: ['Turn a conceptual framework into a clickable visual journey'],
+          practical_moves: ['Use visual hierarchy to reveal the active focus area', 'Keep adjacent modules visible for orientation', 'Translate abstract methods into editorial diagrams people can navigate'],
+          persistence_notes: ['Visuals should point back to durable artifacts', 'Maintain diagrams alongside the evolving framework docs', 'Treat prototypes as working knowledge surfaces']
+        },
+        {
+          id: '05', slug: 'iterative-refinement', tier: 'enhancement', name: 'Iterative Refinement', short_label: 'Refinement', icon: '✦', progress: 60,
+          overview: 'Improve outputs through cycles of sharpening, reframing, and selective expansion.',
+          why_it_matters: 'The first output is rarely the final one. Quality comes from guided iteration.',
+          activities: ['Sharpen structure', 'Refine tone and focus', 'Preserve signal while improving form'],
+          outputs: ['Better deliverables', 'Clearer framing', 'Higher-quality final assets'],
+          success_criteria: ['Outputs improve without losing original intent', 'Iteration becomes disciplined instead of random'],
+          methods: ['Progressive sharpening', 'Targeted rewriting', 'Selective elaboration'],
+          assets: ['Revision prompts', 'Quality criteria checklists', 'Refinement loops'],
+          execution_examples: ['Keep the user\'s core language where it works, but strengthen the structure'],
+          practical_moves: ['Define what should stay constant before revising', 'Sharpen structure before polishing style', 'Use criteria to guide iteration instead of chasing novelty'],
+          persistence_notes: ['Track versions of important deliverables', 'Keep evaluation notes with the artifact', 'Document what changed and why in each refinement pass']
+        },
+        {
+          id: '06', slug: 'context-management', tier: 'enhancement', name: 'Context Management', short_label: 'Context', icon: '↺', progress: 40,
+          overview: 'Control what the model sees, what it carries, and what it should ignore.',
+          why_it_matters: 'Too little context creates weak responses. Too much context creates noise and drift.',
+          activities: ['Curate relevant context', 'Strip noise', 'Maintain continuity across sessions'],
+          outputs: ['Cleaner context windows', 'Better relevance', 'Less repetition'],
+          success_criteria: ['The model has what it needs, but not more than it needs'],
+          methods: ['Context curation', 'Chunking', 'Session bridging', 'Selective recap'],
+          assets: ['Context packs', 'Recap prompts', 'Project snapshots'],
+          execution_examples: ['Pass only the essential project state to the next conversation'],
+          practical_moves: ['Create compact recaps before context gets unwieldy', 'Separate evergreen context from transient noise', 'Deliver only the minimum viable context for the next step'],
+          persistence_notes: ['Keep project snapshots in reusable docs', 'Archive essential context outside the model window', 'Use curated packs instead of copying full chat histories']
+        },
+        {
+          id: '07', slug: 'learning-journey-design', tier: 'advanced', name: 'Learning Journey Design', short_label: 'Learning', icon: '△', progress: 50,
+          overview: 'Turn AI learning into guided progression rather than isolated tips and tricks.',
+          why_it_matters: 'Adoption grows when people learn through structured journeys, not abstract instruction.',
+          activities: ['Design guided progression', 'Create milestone-based learning', 'Translate methods into self-work'],
+          outputs: ['Journey structures', 'Learning paths', 'Practice environments'],
+          success_criteria: ['Users move from experimentation to durable capability'],
+          methods: ['Progressive staging', 'Reflection loops', 'Micro-practice design'],
+          assets: ['Journey maps', 'Prompt sequences', 'Interactive learning tools'],
+          execution_examples: ['Build a framework explorer that teaches while people use it'],
+          practical_moves: ['Sequence learning so complexity expands gradually', 'Use active modules as teaching moments', 'Tie progress to behaviors and artifacts, not only concepts'],
+          persistence_notes: ['Store learning paths as reusable curriculum assets', 'Capture lessons from adoption rounds', 'Keep milestone artifacts for reflection and transfer']
+        },
+        {
+          id: '08', slug: 'multi-modal-orchestration', tier: 'advanced', name: 'Multi-Modal Orchestration', short_label: 'Multi-Modal', icon: '▥', progress: 30,
+          overview: 'Coordinate text, visuals, documents, and interface artifacts as one working system.',
+          why_it_matters: 'Real work does not happen in one medium only.',
+          activities: ['Bridge between text and visuals', 'Move between docs, HTML, prompts, and structured artifacts', 'Use the right medium for the right task'],
+          outputs: ['Cross-medium workflows', 'Integrated artifact chains', 'Richer execution'],
+          success_criteria: ['Projects can move fluidly between conversation, document, and interface'],
+          methods: ['Artifact chaining', 'Medium selection', 'Cross-format continuity'],
+          assets: ['HTML', 'Markdown', 'JSON', 'Slides', 'Visual maps'],
+          execution_examples: ['Start in chat, persist to JSON, express in HTML, review in documentation'],
+          practical_moves: ['Choose formats by function rather than habit', 'Create chains from prompt to artifact to interface', 'Move seamlessly from exploration into durable delivery formats'],
+          persistence_notes: ['Link artifacts across mediums', 'Use shared schemas where possible', 'Preserve continuity as work moves between interfaces']
+        },
+        {
+          id: '09', slug: 'organizational-deployment', tier: 'advanced', name: 'Organizational Deployment', short_label: 'Deployment', icon: '▦', progress: 20,
+          overview: 'Translate individual AI practice into repeatable organizational adoption patterns.',
+          why_it_matters: 'Personal methods only matter strategically when they scale into collective practice.',
+          activities: ['Define adoption layers', 'Create onboarding structures', 'Connect governance and enablement'],
+          outputs: ['Deployment concepts', 'Adoption frameworks', 'Organizational playbooks'],
+          success_criteria: ['AI working methods become teachable, repeatable, and governable across teams'],
+          methods: ['Adoption design', 'Capability staging', 'Framework translation for teams'],
+          assets: ['Playbooks', 'Roadmaps', 'Leadership narratives'],
+          execution_examples: ['Turn successful individual patterns into team-level onboarding and practice environments'],
+          practical_moves: ['Translate personal workflows into teachable team patterns', 'Pair governance with enablement instead of policy alone', 'Build onboarding structures around real working behaviors'],
+          persistence_notes: ['Capture team practices in playbooks', 'Create durable onboarding assets', 'Preserve organizational learning in shared systems of record']
+        }
+      ]
+    };
+
+    const state = {
+      activeModuleId: '03',
+      activeMode: 'Exploded'
+    };
+
+    const tierNav = document.getElementById('tierNav');
+    const journeyTrack = document.getElementById('journeyTrack');
+    const contextGrid = document.getElementById('context');
+    const resolutionControl = document.getElementById('resolutionControl');
+    const heroActiveModule = document.getElementById('heroActiveModule');
+    const heroActiveMode = document.getElementById('heroActiveMode');
+    const activeTierPill = document.getElementById('activeTierPill');
+    const journeyTierMeta = document.getElementById('journeyTierMeta');
+    const journeyFooterNote = document.getElementById('journeyFooterNote');
+    const floatingModeLabel = document.getElementById('floatingModeLabel');
+    const floatingModeSummary = document.getElementById('floatingModeSummary');
+
+    function getActiveModule() {
+      return frameworkData.modules.find((module) => module.id === state.activeModuleId) || frameworkData.modules[0];
+    }
+
+    function formatTier(module) {
+      const tier = frameworkData.tiers[module.tier];
+      return `${tier.label} · ${tier.name}`;
+    }
+
+    function renderTierNav() {
+      tierNav.innerHTML = Object.values(frameworkData.tiers).map((tier) => {
+        const isActive = getActiveModule().tier === tier.id;
+        return `
+          <button class="rail-item ${isActive ? 'active' : ''}" data-tier="${tier.id}">
+            <span class="tier-label">${tier.label}</span>
+            <span class="tier-name">${tier.name}</span>
+            <span class="tier-desc">${tier.descriptor}</span>
+          </button>
+        `;
+      }).join('');
+
+      tierNav.querySelectorAll('.rail-item').forEach((button) => {
+        button.addEventListener('click', () => {
+          const firstModule = frameworkData.modules.find((module) => module.tier === button.dataset.tier);
+          if (firstModule) {
+            state.activeModuleId = firstModule.id;
+            render();
+            document.getElementById('journey').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+    }
+
+    function renderResolutionControl() {
+      resolutionControl.innerHTML = Object.keys(frameworkData.modes).map((mode) => `
+        <button class="${state.activeMode === mode ? 'active' : ''}" data-mode="${mode}">${mode}</button>
+      `).join('');
+
+      resolutionControl.querySelectorAll('button').forEach((button) => {
+        button.addEventListener('click', () => {
+          state.activeMode = button.dataset.mode;
+          render();
+        });
+      });
+    }
+
+    function renderJourney() {
+      journeyTrack.innerHTML = frameworkData.modules.map((module) => {
+        const isActive = module.id === state.activeModuleId;
+        const modeConfig = frameworkData.modes[state.activeMode];
+        const tier = frameworkData.tiers[module.tier];
+        const progressValue = module.progress === null ? 'Rule' : `${module.progress}% signal`;
+        const progressBarWidth = module.progress === null ? 100 : module.progress;
+        const columns = modeConfig.columns.map((column) => {
+          const value = module[column.key];
+          const content = Array.isArray(value)
+            ? `<ul>${value.map((item) => `<li>${item}</li>`).join('')}</ul>`
+            : `<p>${value}</p>`;
+          return `
+            <article class="module-col">
+              <div class="tiny-kicker">${state.activeMode}</div>
+              <h3>${column.title}</h3>
+              ${content}
+            </article>
+          `;
+        }).join('');
+
+        return `
+          <article class="module-card ${isActive ? 'active' : ''} ${module.id === 'R' ? 'foundation-rule' : ''}" data-module-id="${module.id}" data-tier="${module.tier}">
+            <div class="module-compressed">
+              <div class="module-kicker">${tier.label} · ${module.id}</div>
+              <div class="module-icon">${module.icon}</div>
+              <div class="module-short">
+                <div class="module-id">${module.id}</div>
+                <strong>${module.short_label}</strong>
+                <span>${tier.name}</span>
+              </div>
+            </div>
+
+            <div class="module-expanded">
+              <div class="module-topline">
+                <div class="module-title-wrap">
+                  <div class="module-title-row">
+                    <span class="module-number">Module ${module.id}</span>
+                    <span class="tier-pill">${tier.name}</span>
+                  </div>
+                  <h3 class="module-title">${module.name}</h3>
+                  <div class="module-tier-line">
+                    <span>${tier.label}</span>
+                    <span>·</span>
+                    <span>${tier.descriptor}</span>
+                  </div>
+                </div>
+                <div class="module-progress">
+                  <div class="metric-label">${module.progress === null ? 'Persistent principle' : 'Progress signal'}</div>
+                  <strong>${progressValue}</strong>
+                  <div class="progress-track"><div class="progress-bar" style="width:${progressBarWidth}%"></div></div>
+                </div>
+              </div>
+
+              <div class="module-summary">
+                <div class="summary-card">
+                  <div class="tiny-kicker">Overview</div>
+                  <strong>${module.overview}</strong>
+                  <p>${module.why_it_matters}</p>
+                </div>
+                <div class="meta-mini-card module-meta-copy">
+                  <div class="tiny-kicker">Current resolution</div>
+                  <strong>${state.activeMode}</strong>
+                  <p>${modeConfig.summary}</p>
+                  <div style="margin-top: 12px; color: var(--text-secondary); font-size: 0.9rem;">One active focus area. Adjacent modules remain compressed for orientation.</div>
+                </div>
+              </div>
+
+              <div class="view-switcher" aria-label="Internal view modes">
+                ${Object.keys(frameworkData.modes).map((mode) => `<button class="view-btn ${state.activeMode === mode ? 'active' : ''}" data-mode="${mode}">${mode}</button>`).join('')}
+              </div>
+
+              <div class="module-columns">${columns}</div>
+
+              <div class="module-footer">
+                <div class="module-footer-note">${module.id === '03'
+                  ? 'Knowledge handoff is the clearest expression of the framework: chat becomes durable when project state is packaged into transferable artifacts.'
+                  : module.id === 'R'
+                    ? 'The persistence rule stays visible because every other module depends on it to produce durable value.'
+                    : `This module contributes one part of the larger operating system for human–AI collaboration.`}</div>
+                <div class="module-icon" aria-hidden="true">${module.icon}</div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      journeyTrack.querySelectorAll('.module-card').forEach((card) => {
+        card.addEventListener('click', (event) => {
+          const clickedMode = event.target.closest('[data-mode]');
+          if (clickedMode) {
+            state.activeMode = clickedMode.dataset.mode;
+            render();
+            return;
+          }
+          state.activeModuleId = card.dataset.moduleId;
+          render();
+        });
+      });
+    }
+
+    function renderContext() {
+      const activeModule = getActiveModule();
+      const cards = [
+        {
+          title: frameworkData.contextualPanels[0].title,
+          body: frameworkData.contextualPanels[0].body,
+          extra: `Active emphasis: ${activeModule.name} helps shift work from isolated prompting toward a repeatable operating model.`
+        },
+        {
+          title: frameworkData.contextualPanels[1].title,
+          body: frameworkData.contextualPanels[1].body,
+          extra: activeModule.why_it_matters
+        },
+        {
+          title: frameworkData.contextualPanels[2].title,
+          body: frameworkData.contextualPanels[2].body,
+          extra: `Current outputs in focus: ${(activeModule.outputs || []).slice(0, 2).join(' · ')}.`
+        }
+      ];
+
+      contextGrid.innerHTML = cards.map((card) => `
+        <article class="context-card">
+          <div class="tiny-kicker">Context panel</div>
+          <strong>${card.title}</strong>
+          <p>${card.body}</p>
+          <p style="margin-top: 12px;">${card.extra}</p>
+        </article>
+      `).join('');
+    }
+
+    function syncMeta() {
+      const activeModule = getActiveModule();
+      const activeTier = frameworkData.tiers[activeModule.tier];
+      heroActiveModule.textContent = `Module ${activeModule.id} · ${activeModule.name}`;
+      heroActiveMode.textContent = state.activeMode;
+      activeTierPill.textContent = `${activeTier.label} · ${activeTier.name}`;
+      journeyTierMeta.textContent = `${activeTier.label} · ${activeTier.name}`;
+      journeyFooterNote.textContent = activeModule.id === '03'
+        ? 'Module 03 anchors the philosophy most clearly: handoff, persistence, and transfer are what turn chat into a durable system of work.'
+        : activeModule.id === 'R'
+          ? 'The Results Persistence Rule remains visually present because it is the operating base beneath the entire framework.'
+          : `${activeModule.name} belongs to ${activeTier.name.toLowerCase()} and shows how one module contributes to the larger collaboration system.`;
+      floatingModeLabel.textContent = state.activeMode;
+      floatingModeSummary.textContent = frameworkData.modes[state.activeMode].summary;
+    }
+
+    function render() {
+      renderTierNav();
+      renderResolutionControl();
+      renderJourney();
+      renderContext();
+      syncMeta();
+    }
+
+    render();
+  </script>
+</body>
+</html>

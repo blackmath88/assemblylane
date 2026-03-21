@@ -73,3 +73,8 @@ app.js          — Application logic (rendering, selection, connectors)
 - Calm, engineered visual language with breathing room
 - Connector lines preserve relationships during explosion
 - Thread highlighting shows lineage without losing context
+
+## AI Collaboration Framework editorial prototype
+
+A new standalone concept file is available at `ai-collaboration-framework-editorial.html`. It is a single self-contained HTML experience with inline CSS, inline JavaScript, and hardcoded framework data for the requested premium editorial journey explorer.
+
